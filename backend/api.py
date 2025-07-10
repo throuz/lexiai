@@ -39,7 +39,13 @@ class FileRecord(db.Model):
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 CORS(
-    app, origins=["http://localhost:3000", "https://lexiai-pi.vercel.app/"]
+    app,
+    origins=[
+        "http://localhost:3000",
+        "https://lexiai-pi.vercel.app/",
+        "https://lexiai-throuzs-projects.vercel.app/",
+        "https://lexiai-git-main-throuzs-projects.vercel.app/",
+    ],
 )  # 允許本地前端跨域
 
 
