@@ -3,9 +3,9 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from models import db
-from routes_upload import upload_bp
-from routes_summarize import summarize_bp
-from routes_qa import qa_bp
+from routes.upload import upload_bp
+from routes.summarize import summarize_bp
+from routes.qa import qa_bp
 import openai
 
 load_dotenv()
