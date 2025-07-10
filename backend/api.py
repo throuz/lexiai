@@ -43,9 +43,9 @@ CORS(
     # origins="*",
     origins=[
         "http://localhost:3000",
-        "https://lexiai-pi.vercel.app/",
-        "https://lexiai-throuzs-projects.vercel.app/",
-        "https://lexiai-git-main-throuzs-projects.vercel.app/",
+        "https://lexiai-pi.vercel.app",
+        "https://lexiai-throuzs-projects.vercel.app",
+        "https://lexiai-git-main-throuzs-projects.vercel.app",
     ],
 )
 
