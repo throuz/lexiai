@@ -38,10 +38,6 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 CORS(app, origins=["http://localhost:3000"]) # 允許本地前端跨域
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -114,5 +110,6 @@ def qa():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
+    db.create_all()
     # 啟動方式：python backend/api.py
     app.run(host="0.0.0.0", port=5000, debug=True) 
