@@ -4,6 +4,8 @@ import PyPDF2
 import openai
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 # 需要安裝：pip install PyPDF2 openai python-dotenv
 
@@ -15,7 +17,27 @@ ALLOWED_EXTENSIONS = {'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# SQLAlchemy 設定
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+db = SQLAlchemy(app)
+
+class FileRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(256), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    summary = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, filename, text, summary=None):
+        self.filename = filename
+        self.text = text
+        self.summary = summary
+
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -37,13 +59,18 @@ def upload_file():
         with open(filepath, 'rb') as f:
             reader = PyPDF2.PdfReader(f)
             text = "\n".join(page.extract_text() or '' for page in reader.pages)
-        return jsonify({'filename': filename, 'text': text})
+        # 新增資料庫紀錄
+        record = FileRecord(filename=filename, text=text)
+        db.session.add(record)
+        db.session.commit()
+        return jsonify({'filename': filename, 'text': text, 'id': record.id})
     return jsonify({'error': 'Invalid file type'}), 400
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
     data = request.get_json()
     text = data.get('text')
+    record_id = data.get('id')
     if not text:
         return jsonify({'error': 'No text provided'}), 400
     prompt = f"請將以下法律文件內容摘要成重點：\n{text}"
@@ -54,6 +81,12 @@ def summarize():
         )
         content = response.choices[0].message.content
         summary = content.strip() if content else ''
+        # 更新資料庫紀錄
+        if record_id:
+            record = FileRecord.query.get(record_id)
+            if record:
+                record.summary = summary
+                db.session.commit()
         return jsonify({'summary': summary})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
