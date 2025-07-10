@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_cors import CORS
 
 # 需要安裝：pip install PyPDF2 openai python-dotenv
 
@@ -34,6 +35,8 @@ class FileRecord(db.Model):
         self.summary = summary
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+CORS(app, origins=["http://localhost:3000"]) # 允許本地前端跨域
 
 @app.before_first_request
 def create_tables():
