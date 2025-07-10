@@ -13,6 +13,8 @@ export default function LexiAIClient() {
   const [fileId, setFileId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
+
   // PDF 上傳
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError("");
@@ -25,7 +27,7 @@ export default function LexiAIClient() {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await fetch("http://localhost:5000/upload", {
+      const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -46,7 +48,7 @@ export default function LexiAIClient() {
     setSummarizing(true);
     setSummary("");
     try {
-      const res = await fetch("http://localhost:5000/summarize", {
+      const res = await fetch(`${API_BASE}/summarize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: pdfText, id: fileId }),
@@ -67,7 +69,7 @@ export default function LexiAIClient() {
     setQaLoading(true);
     setAnswer("");
     try {
-      const res = await fetch("http://localhost:5000/qa", {
+      const res = await fetch(`${API_BASE}/qa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: pdfText, question }),
