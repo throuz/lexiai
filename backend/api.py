@@ -72,7 +72,7 @@ def summarize():
     record_id = data.get('id')
     if not text:
         return jsonify({'error': 'No text provided'}), 400
-    prompt = f"請將以下法律文件內容摘要成重點，並以完整句子結尾：\n{text}"
+    prompt = f"請將以下法律文件內容摘要成重點，並以完整句子結尾，且每一點都要有詳細說明，總字數不少於 500 字：\n{text}"
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -98,7 +98,7 @@ def qa():
     question = data.get('question')
     if not text or not question:
         return jsonify({'error': 'Text and question required'}), 400
-    prompt = f"根據以下法律文件內容詳細回答問題，請以完整句子結尾：\n{text}\n\n問題：{question}"
+    prompt = f"根據以下法律文件內容詳細回答問題，請以完整句子結尾，並展開說明每一點，總字數不少於 500 字：\n{text}\n\n問題：{question}"
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
