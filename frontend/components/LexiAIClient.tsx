@@ -82,8 +82,27 @@ export default function LexiAIClient() {
     }
   };
 
+  // 狀態重置
+  const handleReset = () => {
+    setPdfText("");
+    setSummary("");
+    setQuestion("");
+    setAnswer("");
+    setFileId(null);
+    setError("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="w-full max-w-xl bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col gap-6">
+      <div className="flex justify-end mb-2">
+        <button
+          className="text-xs px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+          onClick={handleReset}
+        >
+          重新開始
+        </button>
+      </div>
       <label className="block">
         <span className="font-medium">上傳法律 PDF</span>
         <input
@@ -92,7 +111,7 @@ export default function LexiAIClient() {
           ref={fileInputRef}
           onChange={handleUpload}
           className="block mt-2"
-          disabled={uploading}
+          disabled={uploading || !!pdfText}
         />
       </label>
       {uploading && <div className="text-blue-500">上傳中...</div>}
