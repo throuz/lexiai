@@ -72,11 +72,12 @@ def summarize():
     record_id = data.get('id')
     if not text:
         return jsonify({'error': 'No text provided'}), 400
-    prompt = f"請將以下法律文件內容摘要成重點：\n{text}"
+    prompt = f"請將以下法律文件內容摘要成重點，並以完整句子結尾：\n{text}"
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1024
         )
         content = response.choices[0].message.content
         summary = content.strip() if content else ''
@@ -97,11 +98,12 @@ def qa():
     question = data.get('question')
     if not text or not question:
         return jsonify({'error': 'Text and question required'}), 400
-    prompt = f"根據以下法律文件內容回答問題：\n{text}\n\n問題：{question}"
+    prompt = f"根據以下法律文件內容詳細回答問題，請以完整句子結尾：\n{text}\n\n問題：{question}"
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1024
         )
         content = response.choices[0].message.content
         answer = content.strip() if content else ''
